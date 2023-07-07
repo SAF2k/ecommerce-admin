@@ -6,6 +6,9 @@ import { Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import { toast } from "react-hot-toast";
+import axios from "axios";
+import { useParams, useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
@@ -19,6 +22,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { AlertModel } from "@/components/modals/alert-model";
 
 interface SettingsFormProps {
   initialData: Store;
@@ -31,6 +35,8 @@ const formSchema = z.object({
 type SettingsFormValues = z.infer<typeof formSchema>;
 
 export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
+  const params = useParams();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -40,14 +46,34 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
   });
 
   const onSubmit = async (values: SettingsFormValues) => {
-    console.log(values);
+    try {
+      setLoading(true);
+      await axios.patch(`/api/stores/${params.storeId}`, values);
+      router.refresh();
+      toast.success("Store updated successfully");
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <>
+      <AlertModel 
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        onConfirm={() => console.log("confirm")}
+        loading={loading}
+      />
       <div className="flex items-center justify-between">
         <Heading title="Settings" description="Manage Store Preferences" />
-        <Button variant="destructive" size="sm" onClick={() => {}}>
+        <Button
+          disabled={loading}
+          variant="destructive"
+          size="sm"
+          onClick={() => setOpen(true)}
+        >
           <Trash className="h-4 w-4" />
         </Button>
       </div>
@@ -66,7 +92,11 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input disabled={loading} placeholder="Store name" {...field}/>
+                    <Input
+                      disabled={loading}
+                      placeholder="Store name"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
