@@ -25,6 +25,7 @@ import { Input } from "@/components/ui/input";
 import { AlertModel } from "@/components/modals/alert-model";
 import { ApiAlert } from "@/components/ui/api-alert";
 import { useOrigin } from "@/hooks/use-origin";
+import ImageUpload from "@/components/ui/image-upload";
 
 const formSchema = z.object({
   label: z.string().min(1, { message: "Please enter a store name" }),
@@ -37,13 +38,20 @@ interface BillboardFormProps {
   initialData: Billboard | null;
 }
 
-export const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => {
+export const BillboardForm: React.FC<BillboardFormProps> = ({
+  initialData,
+}) => {
   const params = useParams();
   const router = useRouter();
   const origin = useOrigin();
-  
+
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const title = initialData ? "Edit Billboard" : "Create Billboard";
+  const description = initialData ? "Edit Billboard" : "Add a new Billboard";
+  const toastMessage = initialData ? "Billboard Updated" : "Billboard created";
+  const action = initialData ? "Save changes" : "Create";
 
   const form = useForm<BillboardFormValues>({
     resolver: zodResolver(formSchema),
@@ -56,7 +64,11 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => 
   const onSubmit = async (values: BillboardFormValues) => {
     try {
       setLoading(true);
-      await axios.patch(`/api/stores/${params.storeId}`, values);
+      if (!initialData) {
+        await axios.patch(`/api/${params.storeId}/billboards/${params.billboardId}`, values);
+      } else {
+        await axios.patch(`/api/${params.storeId}/billboards`, values);
+      }
       router.refresh();
       toast.success("Store updated successfully");
     } catch (error) {
@@ -90,15 +102,17 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => 
         loading={loading}
       />
       <div className="flex items-center justify-between">
-        <Heading title="Billboard" description="Manage Store Preferences" />
-        <Button
-          disabled={loading}
-          variant="destructive"
-          size="sm"
-          onClick={() => setOpen(true)}
-        >
-          <Trash className="h-4 w-4" />
-        </Button>
+        <Heading title={title} description={description} />
+        {initialData && (
+          <Button
+            disabled={loading}
+            variant="destructive"
+            size="sm"
+            onClick={() => setOpen(true)}
+          >
+            <Trash className="h-4 w-4" />
+          </Button>
+        )}
       </div>
       <Separator />
 
@@ -107,17 +121,35 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => 
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 w-full"
         >
+          <FormField
+            control={form.control}
+            name="imageUrl"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Background Image</FormLabel>
+                <FormControl>
+                  <ImageUpload
+                    value={field.value ? [field.value] : []}
+                    disabled={loading}
+                    onChange={(url) => field.onChange(url)}
+                    onRemove={() => field.onChange("")}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <div className="grid grid-cols-3 gap-8">
             <FormField
               control={form.control}
               name="label"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Label</FormLabel>
                   <FormControl>
                     <Input
                       disabled={loading}
-                      placeholder="Store name"
+                      placeholder="Billboard label"
                       {...field}
                     />
                   </FormControl>
@@ -127,16 +159,11 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => 
             />
           </div>
           <Button disabled={loading} className="ml-auto" type="submit">
-            Save Changes
+            {action}
           </Button>
         </form>
       </Form>
       <Separator />
-      <ApiAlert 
-      title="" 
-      description={`${origin}/api/${params.storeId}`}
-      variant="public" 
-      />
     </>
   );
 };
