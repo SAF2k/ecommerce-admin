@@ -12,7 +12,7 @@ interface AlertModelProps {
     loading: boolean;
 }
 
-export const AlertModel = ({ isOpen, loading,onClose,onConfirm}: AlertModelProps) => {
+export const AlertModal = ({ isOpen, loading,onClose,onConfirm}: AlertModelProps) => {
 
     const [isMounted, setIsMounted] = useState(false);
 
