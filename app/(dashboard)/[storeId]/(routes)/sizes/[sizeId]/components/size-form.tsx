@@ -92,7 +92,7 @@ export const SizeForm: React.FC<SizeFormProps> = ({
       toast.success("Size deleted.");
     } catch (error: any) {
       toast.error(
-        "Make sure you removed all categories using this size first."
+        "Make sure you removed all products using this size first."
       );
     } finally {
       setLoading(false);
@@ -133,11 +133,11 @@ export const SizeForm: React.FC<SizeFormProps> = ({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Label</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input
                       disabled={loading}
-                      placeholder="Size label"
+                      placeholder="Size name"
                       {...field}
                     />
                   </FormControl>
@@ -150,11 +150,11 @@ export const SizeForm: React.FC<SizeFormProps> = ({
               name="value"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Label</FormLabel>
+                  <FormLabel>Value</FormLabel>
                   <FormControl>
                     <Input
                       disabled={loading}
-                      placeholder="Size label"
+                      placeholder="Size value"
                       {...field}
                     />
                   </FormControl>

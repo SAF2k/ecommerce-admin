@@ -7,7 +7,8 @@ import { CellAction } from "./cell-action";
 // You can use a Zod schema here if you want.
 export type SizeColumn = {
   id: string;
-  label: string;
+  name: string;
+  value: string;
   createdAt: string;
 };
 
@@ -19,6 +20,10 @@ export const columns: ColumnDef<SizeColumn>[] = [
   {
     accessorKey: "value",
     header: "Value",
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Date",
   },
   {
     id: "action",
