@@ -1,5 +1,3 @@
-
-
 import prismadb from "@/lib/prismadb";
 
 import { ProductClient } from "./components/client";
@@ -7,11 +5,10 @@ import { ProductColumn } from "./components/columns";
 import { format } from "date-fns";
 import { formatter } from "@/lib/utils";
 
-const ProductsPage = async ({params} : {params: {storeId: string}}) => {
-
+const ProductsPage = async ({ params }: { params: { storeId: string } }) => {
   const products = await prismadb.product.findMany({
     where: {
-      storeId: params.storeId 
+      storeId: params.storeId,
     },
     include: {
       category: true,
@@ -19,10 +16,9 @@ const ProductsPage = async ({params} : {params: {storeId: string}}) => {
       colors: true,
     },
     orderBy: {
-      createdAt: "desc"
-    }
-  }) 
-
+      createdAt: "desc",
+    },
+  });
 
   const formattedProducts: ProductColumn[] = products.map((item) => ({
     id: item.id,

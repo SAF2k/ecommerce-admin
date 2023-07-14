@@ -44,6 +44,11 @@ export function MainNav({
       active: pathname === `/${params.storeId}/products`,
     },
     {
+      href: `/${params.storeId}/orders`,
+      label: "Orders",
+      active: pathname === `/${params.storeId}/orders`,
+    },
+    {
       href: `/${params.storeId}/settings`,
       label: "Settings",
       active: pathname === `/${params.storeId}/settings`,
@@ -59,7 +64,7 @@ export function MainNav({
           className={cn(
             "text-sm font-medium transition-color hover:text-primary",
             route.active
-              ? "text-black dark:text-white"
+              ? "text-[black] dark:text-white"
               : "text-muted-foreground"
           )}
         >
